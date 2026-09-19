@@ -32,7 +32,12 @@ from plone.app.controlpanel.skins import ISkinsSchema
 
 from AccessControl import Unauthorized
 from Products.CMFCore.utils import getToolByName
-from Products.Five.browser.decode import processInputs
+
+
+def processInputs(request):
+    request.processInputs()
+
+
 from Products.statusmessages.interfaces import IStatusMessage
 
 logger = logging.getLogger('plone.app.theming')
@@ -197,7 +202,7 @@ class ThemingControlpanel(BrowserView):
 
                 try:
                     themeData = extractThemeInfo(themeZip, checkRules=False)
-                except (ValueError, KeyError,), e:
+                except (ValueError, KeyError) as e:
                     logger.warn(str(e))
                     self.errors['themeArchive'] = _('error_no_rules_file',
                             u"The uploaded file does not contain "

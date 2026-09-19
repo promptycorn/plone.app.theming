@@ -590,7 +590,7 @@ class TestCase(unittest.TestCase):
         error = None
         try:
             browser.open('%s/404_page' % portal.absolute_url())
-        except HTTPError, e:
+        except HTTPError as e:
             error = e
         self.assertEqual(error.code, 404)
 
@@ -616,7 +616,7 @@ class TestCase(unittest.TestCase):
         error = None
         try:
             browser.open('%s/404_page' % portal.absolute_url())
-        except HTTPError, e:
+        except HTTPError as e:
             error = e
         self.assertEqual(error.code, 404)
 
@@ -661,7 +661,7 @@ class TestCase(unittest.TestCase):
             browser.open(
                     '%s/widget/oauth_login/info.txt' % 
                         portal['subfolder'].absolute_url())
-        except HTTPError, e:
+        except HTTPError as e:
             error = e
         self.assertEqual(error.code, 404)
 
@@ -708,7 +708,7 @@ class TestCase(unittest.TestCase):
 
         try:
             browser.open('%s/404_page' % portal.absolute_url())
-        except HTTPError, e:
+        except HTTPError as e:
             error = e
         self.assertEqual(error.code, 404)
 

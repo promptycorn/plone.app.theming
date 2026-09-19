@@ -1,15 +1,25 @@
 import logging
-import Globals
+try:
+    import Globals
+except ImportError:
+    from App.config import getConfiguration
+
+    class Globals(object):
+        @property
+        def DevelopmentMode(self):
+            return bool(getConfiguration().debug_mode)
+
+    Globals = Globals()
 from os import environ
 
 from lxml import etree
 
 from repoze.xmliter.utils import getHTMLSerializer
 
-from zope.interface import implements, Interface
+from zope.interface import implementer, Interface
 from zope.component import adapts
 from zope.component import queryUtility
-from zope.site.hooks import getSite
+from zope.component.hooks import getSite
 
 from plone.registry.interfaces import IRegistry
 from plone.transformchain.interfaces import ITransform
@@ -66,12 +76,12 @@ def invalidateCache(settings, event):
     if hasattr(registry, '_v_plone_app_theming_caches'):
         del registry._v_plone_app_theming_caches
 
+@implementer(ITransform)
 class ThemeTransform(object):
     """Late stage in the 8000's transform chain. When plone.app.blocks is
     used, we can benefit from lxml parsing having taken place already.
     """
 
-    implements(ITransform)
     adapts(Interface, IThemingLayer)
 
     order = 8850

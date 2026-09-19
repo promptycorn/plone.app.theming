@@ -1,12 +1,25 @@
 import logging
-import Globals
+try:
+    import Globals
+except ImportError:
+    from App.config import getConfiguration
+
+    class Globals(object):
+        @property
+        def DevelopmentMode(self):
+            return bool(getConfiguration().debug_mode)
+
+    Globals = Globals()
 
 import pkg_resources
 
-from StringIO import StringIO
-from ConfigParser import SafeConfigParser
+from configparser import ConfigParser
+from io import StringIO
 
-from urlparse import urlsplit
+try:
+    from urlparse import urlsplit
+except ImportError:
+    from urllib.parse import urlsplit
 
 from lxml import etree
 
@@ -48,6 +61,18 @@ from Products.CMFCore.interfaces import ISiteRoot
 from Products.CMFPlone.utils import safe_unicode
 
 LOGGER = logging.getLogger('plone.app.theming')
+
+try:
+    unicode
+except NameError:
+    unicode = str
+
+
+def readConfig(parser, fp):
+    data = fp.read()
+    if isinstance(data, bytes):
+        data = data.decode('utf-8')
+    parser.read_file(StringIO(data))
 
 
 class NetworkResolver(etree.Resolver):
@@ -538,12 +563,12 @@ def createThemeFromTemplate(title, description, baseOn='template'):
 
     cloneResourceDirectory(source, target)
 
-    manifest = SafeConfigParser()
+    manifest = ConfigParser()
 
     if MANIFEST_FILENAME in target:
         fp = target.openFile(MANIFEST_FILENAME)
         try:
-            manifest.readfp(fp)
+            readConfig(manifest, fp)
         finally:
             fp.close()
 
@@ -587,7 +612,8 @@ def compileThemeTransform(rules, absolutePrefix=None, readNetwork=False, paramet
     if absolutePrefix:
         absolutePrefix = expandAbsolutePrefix(absolutePrefix)
 
-    params = set(parameterExpressions.keys() + ['url', 'base', 'path', 'scheme', 'host'])
+    params = set(parameterExpressions)
+    params.update(['url', 'base', 'path', 'scheme', 'host'])
     xslParams = dict((k, '') for k in params)
 
     compiledTheme = compile_theme(rules,

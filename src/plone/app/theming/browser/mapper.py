@@ -1,5 +1,9 @@
-import urllib
-import urlparse
+try:
+    from urllib import quote_plus
+    import urlparse
+except ImportError:
+    from urllib.parse import quote_plus
+    import urllib.parse as urlparse
 import os.path
 
 import lxml.etree
@@ -11,7 +15,7 @@ from diazo.utils import quote_param
 from zope.component import getMultiAdapter
 from zope.component import getUtility
 
-from zope.site.hooks import getSite
+from zope.component.hooks import getSite
 from zope.publisher.browser import BrowserView
 
 from repoze.xmliter.utils import getHTMLSerializer
@@ -37,10 +41,18 @@ from plone.app.theming.utils import getThemeFromResourceDirectory
 from AccessControl import Unauthorized
 from zExceptions import NotFound
 
-from Products.Five.browser.decode import processInputs
+def processInputs(request):
+    request.processInputs()
+
+
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from Products.statusmessages.interfaces import IStatusMessage
 from Products.CMFCore.utils import getToolByName
+
+try:
+    unicode
+except NameError:
+    unicode = str
 
 
 class ThemeMapper(BrowserView):
@@ -68,7 +80,7 @@ class ThemeMapper(BrowserView):
 
         self.portalUrl = getToolByName(self.context, 'portal_url')()
         self.themeBasePath = "++%s++%s" % (THEME_RESOURCE_NAME, self.name,)
-        self.themeBasePathEncoded = urllib.quote_plus(self.themeBasePath)
+        self.themeBasePathEncoded = quote_plus(self.themeBasePath)
         self.themeBaseUrl = "%s/%s" % (self.portalUrl, self.themeBasePath,)
 
         self.editable = IWritableResourceDirectory.providedBy(self.resourceDirectory)
@@ -228,7 +240,7 @@ class ThemeMapper(BrowserView):
 
             try:
                 transform = compileThemeTransform(themeInfo.rules, themeInfo.absolutePrefix, settings.readNetwork, themeInfo.parameterExpressions or {})
-            except lxml.etree.XMLSyntaxError, e:
+            except lxml.etree.XMLSyntaxError as e:
                 return self.themeInfo_error_template(error=e.msg)
 
             params = prepareThemeParameters(context, self.request, themeInfo.parameterExpressions or {})

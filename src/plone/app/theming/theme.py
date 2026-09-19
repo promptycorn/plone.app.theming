@@ -1,12 +1,11 @@
-from zope.interface import implements
+from zope.interface import implementer
 from plone.app.theming.interfaces import ITheme
 
 
+@implementer(ITheme)
 class Theme(object):
     """A theme, loaded from a resource directory
     """
-
-    implements(ITheme)
 
     def __init__(self, name, rules,
             title=None,

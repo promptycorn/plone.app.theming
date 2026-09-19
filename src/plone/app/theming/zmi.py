@@ -26,6 +26,16 @@ NO_THEME_DTML = [
 def patch_zmi():
     from App.Management import Navigation
     for name in NO_THEME_DTML:
-        dtml = getattr(Navigation, name)
-        dtml.__class__ = NoThemeDTMLFile
+        dtml = getattr(Navigation, name, None)
+        if dtml is None:
+            LOGGER.debug(
+                'Zope Management Interface DTML file %s is not available.',
+                name)
+            continue
+        try:
+            dtml.__class__ = NoThemeDTMLFile
+        except TypeError:
+            LOGGER.debug(
+                'Could not patch Zope Management Interface DTML file %s.',
+                name)
     LOGGER.debug('Patched Zope Management Interface to disable theming.')

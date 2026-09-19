@@ -1,4 +1,5 @@
-from ConfigParser import SafeConfigParser
+from configparser import ConfigParser
+from io import StringIO
 from zope.component import getUtilitiesFor
 
 from plone.resource.manifest import MANIFEST_FILENAME
@@ -7,6 +8,13 @@ from plone.app.theming.interfaces import THEME_RESOURCE_NAME
 from plone.app.theming.interfaces import IThemePlugin
 
 from plone.memoize.ram import cache
+
+
+def readConfig(parser, fp):
+    data = fp.read()
+    if isinstance(data, bytes):
+        data = data.decode('utf-8')
+    parser.read_file(StringIO(data))
 
 def pluginsCacheKey(fun):
     return len(list(getUtilitiesFor(IThemePlugin)))
@@ -70,11 +78,11 @@ def getPluginSettings(themeDirectory, plugins=None):
     manifestContents = {}
 
     if themeDirectory.isFile(MANIFEST_FILENAME):
-        parser = SafeConfigParser()
+        parser = ConfigParser()
         fp = themeDirectory.openFile(MANIFEST_FILENAME)
 
         try:
-            parser.readfp(fp)
+            readConfig(parser, fp)
             for section in parser.sections():
                 manifestContents[section] = {}
 
