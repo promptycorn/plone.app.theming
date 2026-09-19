@@ -1,7 +1,8 @@
 from setuptools import setup, find_packages
 import os
 
-version = '1.1.8'
+version = open(os.path.join(os.path.dirname(__file__),
+                            'src/plone/app/theming/version.txt')).read().strip()
 
 setup(name='plone.app.theming',
       version=version,
