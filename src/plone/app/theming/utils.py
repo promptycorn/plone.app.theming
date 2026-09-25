@@ -286,7 +286,7 @@ def extractThemeInfo(zipfile, checkRules=True):
         rulesFile = manifestDict.get('rules', rulesFile)
         absolutePrefix = manifestDict['prefix'] or absolutePrefix
         title = manifestDict.get('title', None)
-        description = manifestDict.get('title', None)
+        description = manifestDict.get('description', None)
         parameters = manifestDict.get('parameters', {})
         doctype = manifestDict.get('doctype', "")
         preview = manifestDict.get('preview', None)
@@ -334,9 +334,9 @@ def getTheme(name, manifest=None, resources=None):
         doctype = manifest['doctype'] or doctype
         preview = manifest['preview'] or preview
 
-    if isinstance(rules, str):
+    if isinstance(rules, bytes):
         rules = rules.decode('utf-8')
-    if isinstance(prefix, str):
+    if isinstance(prefix, bytes):
         prefix = prefix.decode('utf-8')
 
     return Theme(name, rules,
@@ -386,9 +386,9 @@ def getThemeFromResourceDirectory(resourceDirectory):
         params = manifest['parameters'] or params
         doctype = manifest['doctype'] or doctype
 
-    if isinstance(rules, str):
+    if isinstance(rules, bytes):
         rules = rules.decode('utf-8')
-    if isinstance(prefix, str):
+    if isinstance(prefix, bytes):
         prefix = prefix.decode('utf-8')
 
     return Theme(name, rules,
@@ -505,13 +505,13 @@ def applyTheme(theme):
 
     else:
 
-        if isinstance(theme.rules, str):
+        if isinstance(theme.rules, bytes):
             theme.rules = theme.rules.decode('utf-8')
 
-        if isinstance(theme.absolutePrefix, str):
+        if isinstance(theme.absolutePrefix, bytes):
             theme.absolutePrefix = theme.absolutePrefix.decode('utf-8')
 
-        if isinstance(theme.__name__, str):
+        if isinstance(theme.__name__, bytes):
             theme.__name__ = theme.__name__.decode('utf-8')
 
         settings.currentTheme = theme.__name__
@@ -548,8 +548,7 @@ def createThemeFromTemplate(title, description, baseOn='template'):
         raise KeyError("Theme %s not found" % baseOn)
 
     themeName = getUtility(IURLNormalizer).normalize(title)
-    if isinstance(themeName, unicode):
-        themeName = themeName.encode('utf-8')
+    themeName = safe_unicode(themeName)
 
     resources = getOrCreatePersistentResourceDirectory()
     if themeName in resources:
@@ -580,7 +579,7 @@ def createThemeFromTemplate(title, description, baseOn='template'):
 
     manifestContents = StringIO()
     manifest.write(manifestContents)
-    target.writeFile(MANIFEST_FILENAME, manifestContents)
+    target.writeFile(MANIFEST_FILENAME, manifestContents.getvalue())
 
     return themeName
 

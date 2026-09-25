@@ -26,6 +26,7 @@ from plone.app.theming.utils import getCurrentTheme
 from plone.registry.interfaces import IRegistry
 
 from plone.subrequest import subrequest
+from plone.z3cform.z2 import processInputs
 
 from plone.resource.interfaces import IWritableResourceDirectory
 
@@ -40,10 +41,6 @@ from plone.app.theming.utils import getThemeFromResourceDirectory
 
 from AccessControl import Unauthorized
 from zExceptions import NotFound
-
-def processInputs(request):
-    request.processInputs()
-
 
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from Products.statusmessages.interfaces import IStatusMessage
@@ -255,7 +252,7 @@ class ThemeMapper(BrowserView):
                     serializer.doctype += '\n'
 
             serializer.tree = transform(serializer.tree, **params)
-            result = ''.join(serializer)
+            result = b''.join(serializer)
 
         if title or links or forms:
             tree = lxml.html.fromstring(result)
@@ -284,7 +281,7 @@ class ThemeMapper(BrowserView):
                     else:
                         newQuery['title'] = title
 
-                return self.request.getURL() + '?' + urllib.urlencode(newQuery)
+                return self.request.getURL() + '?' + urlparse.urlencode(newQuery, doseq=True)
 
             if title:
                 titleElement = tree.cssselect("html head title")

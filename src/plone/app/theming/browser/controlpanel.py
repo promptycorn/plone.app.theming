@@ -8,6 +8,7 @@ from zope.publisher.browser import BrowserView
 
 from plone.resource.utils import queryResourceDirectory
 from plone.registry.interfaces import IRegistry
+from plone.z3cform.z2 import processInputs
 
 from plone.memoize.instance import memoize
 
@@ -32,10 +33,6 @@ from plone.app.controlpanel.skins import ISkinsSchema
 
 from AccessControl import Unauthorized
 from Products.CMFCore.utils import getToolByName
-
-
-def processInputs(request):
-    request.processInputs()
 
 
 from Products.statusmessages.interfaces import IStatusMessage
@@ -162,7 +159,7 @@ class ThemingControlpanel(BrowserView):
                 # Theme base settings
 
                 if themeBase is not None:
-                    self.skinsSettings.theme = themeBase.encode('utf-8')
+                    self.skinsSettings.theme = themeBase
                 if markSpecialLinks is not None:
                     self.skinsSettings.mark_special_links = markSpecialLinks
                 if extLinksOpenInNewWindow is not None:
@@ -170,7 +167,7 @@ class ThemingControlpanel(BrowserView):
                 if usePopups is not None:
                     self.skinsSettings.use_popups = usePopups
                 if iconVisibility is not None:
-                    self.skinsSettings.icon_visibility = iconVisibility.encode('utf-8')
+                    self.skinsSettings.icon_visibility = iconVisibility
 
                 IStatusMessage(self.request).add(_(u"Changes saved"))
                 self._setup()

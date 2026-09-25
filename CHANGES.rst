@@ -1,6 +1,13 @@
 Changelog
 =========
 
+1.1.8.post1+pyntra (unreleased)
+------------------------------
+
+- Preserve Python 3 text in theme rules, prefixes, names and skin selections.
+  Write generated manifests as text contents and preserve ZIP descriptions.
+
+
 1.1.8 (2016-08-11)
 ------------------
 

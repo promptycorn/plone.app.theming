@@ -18,7 +18,7 @@
 <metal:block fill-slot="head_slot" tal:define="resourceDirectory nocall:view/resourceDirectory">
 
 <!-- File manager -->
-<metal:block use-macro="resourceDirectory/@@plone.resourceeditor.filemanager/macros/resources" />
+<metal:block use-macro="resourceDirectory/@@plone.resourceeditor.legacy-filemanager/macros/resources" />
 
 <!-- Mapper tools -->
 <script
@@ -813,7 +813,7 @@
         <div id="rules-results-row" class="row splitview" tal:condition="view/editable">
             <div id="rules-editor" class="mapper-box cell width-full position-0">
 
-                <metal:block use-macro="resourceDirectory/@@plone.resourceeditor.filemanager/macros/filemanager">
+                <metal:block use-macro="resourceDirectory/@@plone.resourceeditor.legacy-filemanager/macros/filemanager">
                     <span id="secondary-buttons" metal:fill-slot="extraButtons">
 
                         <button
